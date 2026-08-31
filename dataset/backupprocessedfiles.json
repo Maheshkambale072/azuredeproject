@@ -1,10 +1,6 @@
 {
 	"name": "backupprocessedfiles",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "ls_sa_AzureDE",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"Filename": {
 				"type": "string"

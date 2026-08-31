@@ -1,0 +1,12 @@
+{
+	"name": "Sptfy_table_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sptfy_database_lnksrvs",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
