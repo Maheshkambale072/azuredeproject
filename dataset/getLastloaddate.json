@@ -1,0 +1,21 @@
+{
+	"name": "getLastloaddate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sa_AzureDE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "lastLoadDate.json",
+				"folderPath": "updateLastLoad",
+				"fileSystem": "doc"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

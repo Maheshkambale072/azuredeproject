@@ -1,0 +1,17 @@
+{
+	"name": "Trigger_Blob_Data_Inserted",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/data/blobs/b_d_raw",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/c41aa67a-7206-4bc4-b284-e6da5297fbc5/resourceGroups/RG_AzureDE/providers/Microsoft.Storage/storageAccounts/saazurede",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

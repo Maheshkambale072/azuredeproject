@@ -1,0 +1,80 @@
+{
+	"name": "getDemoDataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "lsTVblob",
+						"type": "DatasetReference"
+					},
+					"name": "getdemocsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_azuredb",
+						"type": "DatasetReference"
+					},
+					"name": "InsertDataintoSQL"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectRequireColumns"
+				},
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          memberid as short,",
+				"          citygroup as string,",
+				"          gender as string,",
+				"          agegroup as string,",
+				"          weight as double,",
+				"          date as date,",
+				"          actual_age as short,",
+				"          hh_income_key as string,",
+				"          hh_education_key as string,",
+				"          hh_child_key as string,",
+				"          hh_size_key as string,",
+				"          hh_sec_key as string,",
+				"          indi_income_key as string,",
+				"          indi_education_key as string,",
+				"          mother_with_child as string,",
+				"          indi_occupancy_key as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> getdemocsv",
+				"getdemocsv select(mapColumn(",
+				"          memberid,",
+				"          citygroup,",
+				"          gender,",
+				"          agegroup,",
+				"          weight,",
+				"          date,",
+				"          actual_age",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRequireColumns",
+				"SelectRequireColumns alterRow(upsertIf(!isNull(memberid)&&!isNull(date))) ~> AlterRow1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['memberid','date'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> InsertDataintoSQL"
+			]
+		}
+	}
+}

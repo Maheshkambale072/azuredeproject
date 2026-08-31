@@ -1,0 +1,15 @@
+{
+	"name": "ADFAzureDE0715",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "982a3bd1-024e-4d2e-96a7-2615bd06b2c5",
+		"tenantId": "2a6917d2-8311-4229-9767-9c201650a217"
+	}
+}
