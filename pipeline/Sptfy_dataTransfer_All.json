@@ -318,6 +318,35 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Failed",
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-30.centralindia.logic.azure.com:443/workflows/5b9c177add4a4ae4bdbfc953a5ce6526/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=MwBIgjou6M0V-DYAqf-OLWU6xZEVwkCwf8ABUSo7q0c",
+					"body": {
+						"value": "{\n    \"pipeline_name\" = \"@{pipeline().Pipeline}\",\n    \"pipeline_id\" = \"@{pipeline().RunId}\"\n}",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -326,31 +355,7 @@
 				"defaultValue": [
 					{
 						"schema": "dbo",
-						"table": "DimUser",
-						"cdc_col": "updated_at",
-						"back_date": ""
-					},
-					{
-						"schema": "dbo",
-						"table": "DimTrack",
-						"cdc_col": "updated_at",
-						"back_date": ""
-					},
-					{
-						"schema": "dbo",
-						"table": "DimDate",
-						"cdc_col": "date",
-						"back_date": ""
-					},
-					{
-						"schema": "dbo",
-						"table": "DimArtist",
-						"cdc_col": "updated_at",
-						"back_date": ""
-					},
-					{
-						"schema": "dbo",
-						"table": "FactSbacktream",
+						"table": "FactStream",
 						"cdc_col": "stream_timestamp",
 						"back_date": ""
 					}
