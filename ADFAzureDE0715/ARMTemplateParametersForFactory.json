@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADFAzureDE0715"
+		},
+		"Sptfy_adslv2_lnksrvs_accountKey": {
+			"value": ""
+		},
+		"Sptfy_database_lnksrvs_password": {
+			"value": ""
+		},
+		"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
+			"value": "https://saazurede.dfs.core.windows.net/"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_server": {
+			"value": "serverazurede.database.windows.net"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_database": {
+			"value": "DB_AzureDE"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_userName": {
+			"value": "admin_db_azure"
+		},
+		"ManTrigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/c41aa67a-7206-4bc4-b284-e6da5297fbc5/resourceGroups/RG_AzureDE/providers/Microsoft.Storage/storageAccounts/saazurede"
+		},
+		"Trigger_Blob_Data_Inserted_properties_typeProperties_scope": {
+			"value": "/subscriptions/c41aa67a-7206-4bc4-b284-e6da5297fbc5/resourceGroups/RG_AzureDE/providers/Microsoft.Storage/storageAccounts/saazurede"
+		}
+	}
+}

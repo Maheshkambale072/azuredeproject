@@ -1,0 +1,98 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFAzureDE0715"
+		},
+		"Sptfy_adslv2_lnksrvs_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Sptfy_adslv2_lnksrvs'"
+		},
+		"Sptfy_database_lnksrvs_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Sptfy_database_lnksrvs'"
+		},
+		"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saazurede.dfs.core.windows.net/"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "serverazurede.database.windows.net"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "DB_AzureDE"
+		},
+		"Sptfy_database_lnksrvs_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "admin_db_azure"
+		},
+		"ManTrigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c41aa67a-7206-4bc4-b284-e6da5297fbc5/resourceGroups/RG_AzureDE/providers/Microsoft.Storage/storageAccounts/saazurede"
+		},
+		"Trigger_Blob_Data_Inserted_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/c41aa67a-7206-4bc4-b284-e6da5297fbc5/resourceGroups/RG_AzureDE/providers/Microsoft.Storage/storageAccounts/saazurede"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ADFAzureDE0715_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Sptfy_adslv2_lnksrvs_accountKey": {
+						"value": "[parameters('Sptfy_adslv2_lnksrvs_accountKey')]"
+					},
+					"Sptfy_database_lnksrvs_password": {
+						"value": "[parameters('Sptfy_database_lnksrvs_password')]"
+					},
+					"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
+						"value": "[parameters('Sptfy_adslv2_lnksrvs_properties_typeProperties_url')]"
+					},
+					"Sptfy_database_lnksrvs_properties_typeProperties_server": {
+						"value": "[parameters('Sptfy_database_lnksrvs_properties_typeProperties_server')]"
+					},
+					"Sptfy_database_lnksrvs_properties_typeProperties_database": {
+						"value": "[parameters('Sptfy_database_lnksrvs_properties_typeProperties_database')]"
+					},
+					"Sptfy_database_lnksrvs_properties_typeProperties_userName": {
+						"value": "[parameters('Sptfy_database_lnksrvs_properties_typeProperties_userName')]"
+					},
+					"ManTrigger_properties_typeProperties_scope": {
+						"value": "[parameters('ManTrigger_properties_typeProperties_scope')]"
+					},
+					"Trigger_Blob_Data_Inserted_properties_typeProperties_scope": {
+						"value": "[parameters('Trigger_Blob_Data_Inserted_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
