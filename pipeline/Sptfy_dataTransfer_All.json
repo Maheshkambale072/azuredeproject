@@ -91,7 +91,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "SELECT MAX(@{item().c_col}) AS MAX_Date from @{item().schema}.@{item().table} ",
+														"value": "SELECT MAX(@{item().cdc_col}) AS MAX_Date from @{item().schema}.@{item().table} ",
 														"type": "Expression"
 													}
 												}
@@ -156,7 +156,10 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"container": "bronze",
-													"folder": "cdc",
+													"folder": {
+														"value": "@{item().table}_cdc",
+														"type": "Expression"
+													},
 													"file": "empty.json"
 												}
 											}
@@ -325,31 +328,31 @@
 						"schema": "dbo",
 						"table": "DimUser",
 						"cdc_col": "updated_at",
-						"from_date": ""
+						"back_date": ""
 					},
 					{
 						"schema": "dbo",
 						"table": "DimTrack",
 						"cdc_col": "updated_at",
-						"from_date": ""
+						"back_date": ""
 					},
 					{
 						"schema": "dbo",
 						"table": "DimDate",
 						"cdc_col": "date",
-						"from_date": ""
+						"back_date": ""
 					},
 					{
 						"schema": "dbo",
 						"table": "DimArtist",
 						"cdc_col": "updated_at",
-						"from_date": ""
+						"back_date": ""
 					},
 					{
 						"schema": "dbo",
-						"table": "FactStream",
+						"table": "FactSbacktream",
 						"cdc_col": "stream_timestamp",
-						"from_date": ""
+						"back_date": ""
 					}
 				]
 			}
