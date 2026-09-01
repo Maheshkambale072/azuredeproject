@@ -5,19 +5,11 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "lsTVblob",
-						"type": "DatasetReference"
-					},
 					"name": "getdemocsv"
 				}
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "ds_azuredb",
-						"type": "DatasetReference"
-					},
 					"name": "InsertDataintoSQL"
 				}
 			],
@@ -49,8 +41,7 @@
 				"          indi_occupancy_key as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> getdemocsv",
+				"     validateSchema: false) ~> getdemocsv",
 				"getdemocsv select(mapColumn(",
 				"          memberid,",
 				"          citygroup,",
@@ -65,15 +56,9 @@
 				"SelectRequireColumns alterRow(upsertIf(!isNull(memberid)&&!isNull(date))) ~> AlterRow1",
 				"AlterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:false,",
-				"     updateable:false,",
-				"     upsertable:true,",
-				"     keys:['memberid','date'],",
-				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> InsertDataintoSQL"
+				"     format: 'table') ~> InsertDataintoSQL"
 			]
 		}
 	}
