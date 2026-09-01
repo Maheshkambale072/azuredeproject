@@ -1,10 +1,6 @@
 {
 	"name": "ds_azuredb",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "ls_AzureDB",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"table_name": {
 				"type": "string"
