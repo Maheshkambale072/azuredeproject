@@ -170,7 +170,10 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"container": "tvbronze",
-													"folder": "cdc",
+													"folder": {
+														"value": "@{item().table}_cdc",
+														"type": "Expression"
+													},
 													"file": "cdc.json"
 												}
 											}
@@ -327,6 +330,24 @@
 					{
 						"schema": "tv",
 						"table": "DimChannel",
+						"cdc_col": "updated_at",
+						"back_date": ""
+					},
+					{
+						"schema": "tv",
+						"table": "b_p_raw",
+						"cdc_col": "updated_at",
+						"back_date": ""
+					},
+					{
+						"schema": "tv",
+						"table": "b_s_raw",
+						"cdc_col": "updated_at",
+						"back_date": ""
+					},
+					{
+						"schema": "tv",
+						"table": "b_d_raw",
 						"cdc_col": "updated_at",
 						"back_date": ""
 					}
