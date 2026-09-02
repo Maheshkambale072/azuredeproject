@@ -169,7 +169,7 @@
 												"referenceName": "sptfy_get_json_datalake",
 												"type": "DatasetReference",
 												"parameters": {
-													"container": "bronze",
+													"container": "tvbronze",
 													"folder": "cdc",
 													"file": "cdc.json"
 												}
