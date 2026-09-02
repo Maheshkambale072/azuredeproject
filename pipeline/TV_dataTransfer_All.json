@@ -49,7 +49,7 @@
 												"referenceName": "sptfy_datalake_parquet",
 												"type": "DatasetReference",
 												"parameters": {
-													"container": "bronze",
+													"container": "tvbronze",
 													"folder": {
 														"value": "@item().table",
 														"type": "Expression"
@@ -155,7 +155,7 @@
 												"referenceName": "sptfy_get_json_datalake",
 												"type": "DatasetReference",
 												"parameters": {
-													"container": "bronze",
+													"container": "tvbronze",
 													"folder": {
 														"value": "@{item().table}_cdc",
 														"type": "Expression"
@@ -244,7 +244,7 @@
 									"referenceName": "sptfy_datalake_parquet",
 									"type": "DatasetReference",
 									"parameters": {
-										"container": "bronze",
+										"container": "tvbronze",
 										"folder": {
 											"value": "@item().table",
 											"type": "Expression"
