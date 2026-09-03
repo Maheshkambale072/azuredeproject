@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ADFAzureDE0715"
 		},
+		"AzureDE_Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDE_Databricks'"
+		},
 		"Sptfy_adslv2_lnksrvs_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'Sptfy_adslv2_lnksrvs'"
@@ -14,6 +18,10 @@
 		"Sptfy_database_lnksrvs_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Sptfy_database_lnksrvs'"
+		},
+		"AzureDE_Databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0902-131540-fpy7he3f"
 		},
 		"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
 			"type": "string",
@@ -66,11 +74,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureDE_Databricks_accessToken": {
+						"value": "[parameters('AzureDE_Databricks_accessToken')]"
+					},
 					"Sptfy_adslv2_lnksrvs_accountKey": {
 						"value": "[parameters('Sptfy_adslv2_lnksrvs_accountKey')]"
 					},
 					"Sptfy_database_lnksrvs_password": {
 						"value": "[parameters('Sptfy_database_lnksrvs_password')]"
+					},
+					"AzureDE_Databricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDE_Databricks_properties_typeProperties_existingClusterId')]"
 					},
 					"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
 						"value": "[parameters('Sptfy_adslv2_lnksrvs_properties_typeProperties_url')]"

@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ADFAzureDE0715"
 		},
+		"AzureDE_Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDE_Databricks'"
+		},
 		"Sptfy_adslv2_lnksrvs_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'Sptfy_adslv2_lnksrvs'"
@@ -14,6 +18,10 @@
 		"Sptfy_database_lnksrvs_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Sptfy_database_lnksrvs'"
+		},
+		"AzureDE_Databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0902-131540-fpy7he3f"
 		},
 		"Sptfy_adslv2_lnksrvs_properties_typeProperties_url": {
 			"type": "string",
@@ -774,6 +782,424 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/TV_Databricks')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/TVAzureProject/Silver/Process_Silver_layer"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDE_Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDE_Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TV_dataTransfer_All')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.loop_load",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "If Condition",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Source to datalake",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@greater(activity('Source to datalake').output.rowsRead,0)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Delete generated Blank file_copy1_copy1_copy1",
+												"type": "Delete",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"dataset": {
+														"referenceName": "sptfy_datalake_parquet",
+														"type": "DatasetReference",
+														"parameters": {
+															"container": "tvbronze",
+															"folder": {
+																"value": "@item().table",
+																"type": "Expression"
+															},
+															"file": {
+																"value": "@concat(item().table,'_',variables('current'))",
+																"type": "Expression"
+															}
+														}
+													},
+													"enableLogging": false,
+													"storeSettings": {
+														"type": "AzureBlobFSReadSettings",
+														"recursive": true,
+														"enablePartitionDiscovery": false
+													}
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Get MAX Date",
+												"type": "Script",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"linkedServiceName": {
+													"referenceName": "Sptfy_database_lnksrvs",
+													"type": "LinkedServiceReference"
+												},
+												"typeProperties": {
+													"scripts": [
+														{
+															"type": "Query",
+															"text": {
+																"value": "SELECT MAX(@{item().cdc_col}) AS MAX_Date from @{item().schema}.@{item().table} ",
+																"type": "Expression"
+															}
+														}
+													],
+													"scriptBlockExecutionTimeout": "02:00:00"
+												}
+											},
+											{
+												"name": "Updated cdc_json",
+												"type": "Copy",
+												"dependsOn": [
+													{
+														"activity": "Get MAX Date",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "JsonSource",
+														"additionalColumns": [
+															{
+																"name": "cdc",
+																"value": {
+																	"value": "@activity('Get MAX Date').output.resultSets[0].rows[0].MAX_Date",
+																	"type": "Expression"
+																}
+															}
+														],
+														"storeSettings": {
+															"type": "AzureBlobFSReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "JsonReadSettings"
+														}
+													},
+													"sink": {
+														"type": "JsonSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "JsonWriteSettings"
+														}
+													},
+													"enableStaging": false
+												},
+												"inputs": [
+													{
+														"referenceName": "sptfy_get_json_datalake",
+														"type": "DatasetReference",
+														"parameters": {
+															"container": "tvbronze",
+															"folder": {
+																"value": "@{item().table}_cdc",
+																"type": "Expression"
+															},
+															"file": "empty.json"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "sptfy_get_json_datalake",
+														"type": "DatasetReference",
+														"parameters": {
+															"container": "tvbronze",
+															"folder": {
+																"value": "@{item().table}_cdc",
+																"type": "Expression"
+															},
+															"file": "cdc.json"
+														}
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "Source to datalake",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Get last updated date",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										},
+										{
+											"activity": "Set variable",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 3,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "SELECT * FROM @{item().schema}.@{item().table} WHERE @{item().cdc_col} > '@{if(empty(item().back_date),activity('Get last updated date').output.value[0].cdc,item().back_date)}'",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "ParquetWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Sptfy_table_ds",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "sptfy_datalake_parquet",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": "tvbronze",
+												"folder": {
+													"value": "@item().table",
+													"type": "Expression"
+												},
+												"file": {
+													"value": "@concat(item().table,'_',variables('current'))",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Get last updated date",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"dataset": {
+											"referenceName": "sptfy_get_json_datalake",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": {
+													"value": "tvbronze",
+													"type": "Expression"
+												},
+												"folder": {
+													"value": "@{item().table}_cdc",
+													"type": "Expression"
+												},
+												"file": "cdc.json"
+											}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "Set variable",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "current",
+										"value": {
+											"value": "@utcNow()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"loop_load": {
+						"type": "array",
+						"defaultValue": [
+							{
+								"schema": "tv",
+								"table": "DimChannel",
+								"cdc_col": "updated_at",
+								"back_date": ""
+							},
+							{
+								"schema": "tv",
+								"table": "b_p_raw",
+								"cdc_col": "updated_at",
+								"back_date": ""
+							},
+							{
+								"schema": "tv",
+								"table": "b_s_raw",
+								"cdc_col": "updated_at",
+								"back_date": ""
+							},
+							{
+								"schema": "tv",
+								"table": "b_d_raw",
+								"cdc_col": "updated_at",
+								"back_date": ""
+							}
+						]
+					}
+				},
+				"variables": {
+					"Date": {
+						"type": "String"
+					},
+					"errte": {
+						"type": "String"
+					},
+					"current": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Sptfy_table_ds')]",
+				"[concat(variables('factoryId'), '/datasets/sptfy_datalake_parquet')]",
+				"[concat(variables('factoryId'), '/datasets/sptfy_get_json_datalake')]",
+				"[concat(variables('factoryId'), '/linkedServices/Sptfy_database_lnksrvs')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Sptfy_table_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -881,6 +1307,24 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Sptfy_adslv2_lnksrvs')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDE_Databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-7405608305590357.17.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDE_Databricks_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDE_Databricks_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Sptfy_adslv2_lnksrvs')]",
